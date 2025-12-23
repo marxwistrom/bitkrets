@@ -1,8 +1,12 @@
 import { test, expect } from "vitest";
 import {
+  validateBlogIdIsNumber,
   validateBlogPostFormData,
+  validateBlogTitleLength,
   validateEmailAddressStructure,
+  validatePasswordStrength,
 } from "../../src/frontend/utils/validate";
+import { blogTitleLength } from "../../src/constants";
 
 // Old test...
 test("test validate formData is string", () => {
@@ -30,4 +34,61 @@ test("test returns valid email address", () => {
     // "I want a function with this name to return true for valid email address"
     validateEmailAddressStructure(validEmailAddressStructure)
   ).toBe(true);
+});
+
+// test passwordValidate function
+test("test valid password strength", () => {
+  // invalid password strengths
+  const shortPassword = "not-16-chars";
+  const notAnyLower = "ONLY-UPPER-CASE1";
+  const notAnyNumber = "NOT-aNY-NUMBER!";
+  const notAnySpecialCharacters = "notAnySpecialCharacters1";
+  expect(validatePasswordStrength(shortPassword)).toBe(false);
+  expect(validatePasswordStrength(notAnyLower)).toBe(false);
+  expect(validatePasswordStrength(notAnyNumber)).toBe(false);
+  expect(validatePasswordStrength(notAnySpecialCharacters)).toBe(false);
+
+  // valid password strength
+  const correctPasswordStrength = "This-is-a-valid-password-1;";
+  expect(validatePasswordStrength(correctPasswordStrength)).toBe(true);
+});
+
+// test validateBlogId function
+test("test valid blogId value", () => {
+  // invalid blogId (!number)
+  const invalidBlogId = "asd";
+  expect(validateBlogIdIsNumber(invalidBlogId)).toBe(false);
+
+  // valid blogId (number)
+  const validBlogId = "123";
+  expect(validateBlogIdIsNumber(validBlogId)).toBe(true);
+});
+
+// create function to generate random blogTitle
+// give it a value for the number of characters
+function generateRandomBlogTitle(blogTitleLength: number) {
+  const characters = "ASDAFAASDdSGSAGAgsagsagSGAGagaGGAgaa";
+  let randomBlogTitle = "";
+  for (let i = 0; i <= blogTitleLength; i++) {
+    randomBlogTitle += characters.charAt(
+      Math.floor(Math.random() * characters.length)
+    );
+  }
+  return randomBlogTitle;
+}
+
+// test validate validBlogTitle
+test("test validateBlogTitle", () => {
+  // too short blog title
+  expect(
+    validateBlogTitleLength(
+      generateRandomBlogTitle(blogTitleLength.minLength - 1)
+    )
+  ).toBe(false);
+  // too long blog title
+  expect(
+    validateBlogTitleLength(
+      generateRandomBlogTitle(blogTitleLength.maxLength + 1)
+    )
+  ).toBe(false);
 });

@@ -3,3 +3,8 @@ export const blogPostFormSubmitType = {
   edit: "edit",
   delete: "delete",
 };
+
+export const blogTitleLength = {
+  minLength: 15,
+  maxLength: 50
+}
