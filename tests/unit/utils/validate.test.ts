@@ -3,10 +3,19 @@ import {
   validateBlogIdIsNumber,
   validateBlogPostFormData,
   validateBlogTitleLength,
+  validateCreateBlogPostFormData,
+  validateEditBlogPostFormData,
   validateEmailAddressStructure,
   validatePasswordStrength,
-} from "../../src/frontend/utils/validate";
-import { blogTitleLength } from "../../src/constants";
+} from "../../../src/utils/validate";
+import {
+  blogPostFormSubmitType,
+  blogTitleLength,
+} from "../../../src/constants";
+import type {
+  CreateBlogPostFormData,
+  EditBlogPostFormData,
+} from "../../../src/types/bitkrets";
 
 // Old test...
 test("test validate formData is string", () => {
@@ -91,4 +100,92 @@ test("test validateBlogTitle", () => {
       generateRandomBlogTitle(blogTitleLength.maxLength + 1)
     )
   ).toBe(false);
+});
+
+const invalidCreateBlogPostFormData: CreateBlogPostFormData[] = [
+  {
+    blogTitle: "This is a valid blog title",
+    // invalid blog text
+    blogText: "",
+    submitType: blogPostFormSubmitType.create,
+  },
+  {
+    // invalid blog title
+    blogTitle: "",
+    blogText: "This is valid blog text",
+    submitType: blogPostFormSubmitType.create,
+  },
+  {
+    blogTitle: "This is valid blog title",
+    blogText: "This is valid blog text",
+    // invalid submit type
+    submitType: "",
+  },
+];
+
+// valid CreateBlogPostFormData
+const validCreateBlogPostFormData: CreateBlogPostFormData = {
+  blogTitle: "Valid blog title",
+  blogText: "Valid blog text",
+  submitType: blogPostFormSubmitType.create,
+};
+
+// test validate createBlogPostFormData
+test("test validateCreateBlogPostFormData", () => {
+  // test invalid CreateBlogPostFormData
+  invalidCreateBlogPostFormData.map((formData) => {
+    expect(validateCreateBlogPostFormData(formData)).toBe(false);
+  });
+  // test valid CreateBlogPostFormData
+  expect(validateCreateBlogPostFormData(validCreateBlogPostFormData)).toBe(true);
+});
+
+// invalid EditBlogPostFormData
+const invalidEditBlogPostFormData: EditBlogPostFormData[] = [
+  {
+    // invalid blogId
+    blogId: "asd",
+    blogTitle: "This is a valid blog title",
+    blogText: "Valid blog text",
+    submitType: blogPostFormSubmitType.edit,
+  },
+  {
+    blogId: "123",
+    // invalid blog title
+    blogTitle: "",
+    blogText: "This is valid blog text",
+    submitType: blogPostFormSubmitType.edit,
+  },
+  {
+    blogId: "123",
+    blogTitle: "Valid blog title",
+    // invalid blog text
+    blogText: "",
+    submitType: blogPostFormSubmitType.edit,
+  },
+  {
+    blogId: "123",
+    blogTitle: "This is valid blog title",
+    blogText: "This is valid blog text",
+    // invalid submit type
+    submitType: "",
+  },
+];
+
+// valid EditBlogPostFormData
+const validEditBlogPostFormData: EditBlogPostFormData = {
+  blogId: "123",
+  blogTitle: "This is valid blog title",
+  blogText: "Valid blog text",
+  submitType: blogPostFormSubmitType.edit,
+};
+
+// test validateEditBlogPostFormData
+test("test validateEditBlogPostFormData", () => {
+  // test invalid EditBlogPostFormData
+  invalidEditBlogPostFormData.map((formData) => {
+    expect(validateEditBlogPostFormData(formData)).toBe(false);
+  });
+  // test valid EditBlogPostFormData
+  expect(validateEditBlogPostFormData(validEditBlogPostFormData)).toBe(true);
 });
